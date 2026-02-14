@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contraseña "1402"</title>
+
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: rgb(194, 197, 197);
+      overflow-x: hidden;
+    }
+
+    .hearts {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .heart {
+      position: absolute;
+      animation: fall linear forwards;
+      color: rgba(255,0,0,0.6);
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(100vh);
+        opacity: 0;
+      }
+    }
+
+    /* 🔥 CAMBIO: que se adapte a cualquier pantalla */
+    .screen {
+      display: none;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      text-align: center;
+      flex-direction: column;
+      position: relative;
+      z-index: 2;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .active {
+      display: flex;
+    }
+
+    .password-screen {
+      flex-direction: column;
+    }
+
+    /* 🔥 CAMBIO: teclado adaptable */
+    .keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 70px);
+      gap: 12px;
+      margin-top: 20px;
+      justify-content: center;
+    }
+
+    .key {
+      background-color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 20px;
+      padding: 15px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 4px 4px 8px rgba(0,0,0,0.15);
+    }
+
+    .key:hover {
+      background-color: #e6f0f5;
+      transform: translateY(-3px);
+    }
+
+    .input-display {
+      font-size: 24px;
+      margin-top: 20px;
+      letter-spacing: 8px;
+    }
+
+    /* 🔥 CAMBIO: carta responsive */
+    .notepad {
+      background-color: #f9f9f9;
+      border: 3px solid #000000;
+      padding: 20px;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 500px;
+      text-align: left;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      line-height: 1.6;
+      box-shadow: 8px 8px 15px rgba(0,0,0,0.2);
+      box-sizing: border-box;
+    }
+
+    .notepad h3 {
+      margin-top: 0;
+    }
+
+    /* 🔥 CAMBIO: imagen ya NO se recorta */
+    .password-img {
+      width: min(320px, 90%);
+      height: auto;
+      object-fit: contain;
+      border-radius: 15px;
+      box-shadow: 6px 6px 15px rgba(0,0,0,0.3);
+      margin-bottom: 20px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .note-img {
+      width: 100%;
+      max-width: 450px;
+      height: auto;
+      border-radius: 15px;
+      margin-bottom: 15px;
+      box-shadow: 4px 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .back-btn {
+      display: inline-block;
+      margin-top: 15px;
+      background-color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 4px 4px 8px rgba(0,0,0,0.15);
+      transition: all 0.2s ease;
+    }
+
+    .back-btn:hover {
+      background-color: #ded8d8;
+      transform: translateY(-2px);
+    }
+
+    /* BOTÓN MUTE */
+    .mute-btn {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      z-index: 9999;
+      background: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 12px;
+      font-size: 16px;
+      cursor: pointer;
+      box-shadow: 4px 4px 8px rgba(0,0,0,0.2);
+      transition: 0.2s;
+    }
+
+    .mute-btn:hover {
+      background-color: #ded8d8;
+      transform: translateY(-2px);
+    }
+
+    /* 🔥 Extra: ajuste en pantallas pequeñas */
+    @media (max-width: 500px) {
+      .keypad {
+        grid-template-columns: repeat(3, 60px);
+        gap: 10px;
+      }
+
+      .key {
+        padding: 14px;
+        font-size: 18px;
+      }
+
+      .input-display {
+        font-size: 22px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- AUDIO DE FONDO -->
+<audio id="bgMusic" loop>
+  <source src="music/Los Panchos - Piel Canela.mp3" type="audio/mpeg">
+  Tu navegador no soporta audio.
+</audio>
+
+<!-- BOTÓN PARA MUTEAR -->
+<button class="mute-btn" id="muteBtn">🔊 Música</button>
+
+<div class="hearts"></div>
+
+<div id="passwordScreen" class="screen password-screen active">
+  <img src="https://acortar.link/el8Gwt" 
+       alt="Imagen decorativa" 
+       class="password-img">
+
+  <h2>🔒 Ingresa la contraseña</h2>
+  <div class="input-display" id="inputDisplay">••••</div>
+
+  <div class="keypad">
+    <button class="key" onclick="enterDigit('1')">1</button>
+    <button class="key" onclick="enterDigit('2')">2</button>
+    <button class="key" onclick="enterDigit('3')">3</button>
+    <button class="key" onclick="enterDigit('4')">4</button>
+    <button class="key" onclick="enterDigit('5')">5</button>
+    <button class="key" onclick="enterDigit('6')">6</button>
+    <button class="key" onclick="enterDigit('7')">7</button>
+    <button class="key" onclick="enterDigit('8')">8</button>
+    <button class="key" onclick="enterDigit('9')">9</button>
+    <button class="key" onclick="checkPassword()">✔</button>
+    <button class="key" onclick="enterDigit('0')">0</button>
+    <button class="key" onclick="deleteLast()">⌫</button>
+  </div>
+</div>
+
+<div id="notepadScreen" class="screen">
+  <div class="notepad" style="text-align: center;">
+
+    <img src="img/Para ti😼💗.jpg" 
+         alt="Imagen decorativa" 
+         class="password-img">
+
+    <h3 style="text-align: left; margin-bottom: 0;">📅 14 Febrero 2026</h3>
+    <h4 style="text-align: left; margin-top: 0;">💌 Querida Lini</h4>
+
+    <p style="text-align: justify;">
+      Antes que nada, quiero decirte que se que has estado ocupada con tus cosas, y que no has tenido mucho tiempo para contestarme y todon eso, y no te preocupes, lo entiendo perfectamente. No quiero que te sientas mal por eso, porque sé que tienes muchas cosas en tu vida y no siempre es fácil responder a todo. Lo importante es que sepas que te quiero mucho y que siempre estaré aquí para ti, sin importar lo ocupada que estés.
+    </p>
+
+ <p style="text-align: justify;">
+      Tambien te queria decir me gusta mucho como eres, y que me encanta pasar tiempo contigo, aunque sea solo hablando o haciendo cosas simples. Eres una persona muy especial para mí, y me siento muy afortunado de tenerte en mi vida. No importa lo que pase, siempre te apoyaré y estaré a tu lado.
+    </p>
+
+ <p style="text-align: justify;">
+      Gracias por ser tu misma, por ser tan amable, divertida y cariñosa. Eres una persona increíble, y me siento muy feliz de que hays regresado a mi vida. Espero que podamos seguir compartiendo momentos juntos y creando recuerdos inolvidables.
+    </p>
+
+    <p style="text-align: justify;">
+      Hoy, 14 de febrero, quiero desearte un muy feliz Día del Amor y la Amistad.
+      Y aunque no pueda darte algo físicamente, quiero regalarte aunque sea un detalle virtual.
+      No será la gran cosa, pero lo hago con todo mi cariño.
+    </p>
+
+    <p style="text-align: justify;">
+      Y por último… no dejes que nadie intente rebajarte. Si alguien dice algo malo de ti, no les hagas caso.
+      Tú eres una persona muy bonita, amable y especial. Te quiero ♡
+    </p>
+
+    <button class="back-btn" onclick="goBack()">🔙 Inicio</button>
+  </div>
+</div>
+
+<script>
+  function crearCorazones() {
+    const heartsContainer = document.querySelector('.hearts');
+    setInterval(() => {
+      const heart = document.createElement('div');
+      heart.classList.add('heart');
+      heart.textContent = '❤';
+      heart.style.left = Math.random() * 100 + 'vw';
+      heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
+      heart.style.animationDuration = (Math.random() * 5 + 5) + 's';
+      heartsContainer.appendChild(heart);
+      setTimeout(() => { heart.remove(); }, 8000);
+    }, 500);
+  }
+  crearCorazones();
+
+  const correctPassword = '1402';
+  let input = '';
+
+  function enterDigit(digit) {
+    if (input.length < 4) {
+      input += digit;
+      updateDisplay();
+    }
+  }
+
+  function deleteLast() {
+    input = input.slice(0, -1);
+    updateDisplay();
+  }
+
+  function updateDisplay() {
+    document.getElementById('inputDisplay').textContent = input.padEnd(4, '•');
+  }
+
+  function checkPassword() {
+    if (input.length === 4) {
+      if (input === correctPassword) {
+        document.getElementById('passwordScreen').classList.remove('active');
+        document.getElementById('notepadScreen').classList.add('active');
+      } else {
+        alert('Contraseña incorrecta, intenta de nuevo');
+        input = '';
+        updateDisplay();
+      }
+    } else {
+      alert('Debes ingresar los 4 dígitos.');
+    }
+  }
+
+  function goBack() {
+    document.getElementById('notepadScreen').classList.remove('active');
+    document.getElementById('passwordScreen').classList.add('active');
+    input = '';
+    updateDisplay();
+  }
+
+  // 🎵 MÚSICA + BOTÓN MUTE
+  const bgMusic = document.getElementById("bgMusic");
+  const muteBtn = document.getElementById("muteBtn");
+
+  let isMuted = false;
+
+  document.addEventListener("click", () => {
+    bgMusic.play().catch(() => {});
+  }, { once: true });
+
+  muteBtn.addEventListener("click", () => {
+    if (!isMuted) {
+      bgMusic.pause();
+      muteBtn.textContent = "🔇 Silencio";
+      isMuted = true;
+    } else {
+      bgMusic.play();
+      muteBtn.textContent = "🔊 Música";
+      isMuted = false;
+    }
+  });
+</script>
+
+</body>
+</html>
